@@ -25,35 +25,33 @@ def column_to_list(data, index):
 
 answer = "yes"
 
+start_stations = set(column_to_list(data_list, 3))
+
 def count_items(column_list):
     item_types = []
     count_items = []
 
     item_types = set(column_list)
-    item_types.remove('')
+    aux = {}
+
+    for item in item_types:
+        aux[item] = 0
 
     for item in column_list:
-        for tipo in item_types:
-            if item == tipo:
-                
-    return item_types, count_items
+        if item in aux:
+            aux[item] += 1
 
+    for item in aux.values():
+        count_items.append(item)
+
+    return item_types, count_items
 
 if answer == "yes":
     # ------------ NÃO MUDE NENHUM CÓDIGO AQUI ------------
     column_list = column_to_list(data_list, -2)
     types, counts = count_items(column_list)
-    print("\nTAREFA 12: Imprimindo resultados para count_items()")
-    print("Tipos:", types, "Counts:", counts)
+
+    print("Tipos:", len(types), "Counts:", sum(counts))
     assert len(types) == 3, "TAREFA 12: Há 3 tipos de gênero!"
     assert sum(counts) == 1551505, "TAREFA 12: Resultado de retorno incorreto!"
     # -----------------------------------------------------
-
-column_list = column_to_list(data_list, -2)
-
-teste = set(column_list)
-teste.remove('')
-
-
-
-print(len(column_list))

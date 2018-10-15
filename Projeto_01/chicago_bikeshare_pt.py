@@ -271,7 +271,7 @@ input("Aperte Enter para continuar...")
 # TAREFA 10
 # Gênero é fácil porque nós temos apenas algumas opções. E quanto a start_stations? Quantas opções ele tem?
 # TODO: Verifique quantos tipos de start_stations nós temos, usando set()
-start_stations = set()
+start_stations = set(column_to_list(data_list, 3))
 
 print("\nTAREFA 10: Imprimindo as start stations:")
 print(len(start_stations))
@@ -306,8 +306,18 @@ def count_items(column_list):
     item_types = []
     count_items = []
 
-    item_types = set(column_list):
-        item_types
+    item_types = set(column_list)
+    aux = {}
+
+    for item in item_types:
+        aux[item] = 0
+
+    for item in column_list:
+        if item in aux:
+            aux[item] += 1
+
+    for item in aux.values():
+        count_items.append(item)
     return item_types, count_items
 
 
