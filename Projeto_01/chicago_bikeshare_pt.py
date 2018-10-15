@@ -60,8 +60,7 @@ input("Aperte Enter para continuar...")
 # TODO: Crie uma função para adicionar as colunas(features) de uma lista em outra lista, na mesma ordem
 def column_to_list(data, index):
     column_list = []
-    for amostra in data:
-        column_list.append(amostra[index])
+    column_list = [amostra[index] for amostra in data]
     # Dica: Você pode usar um for para iterar sobre as amostras, pegar a feature pelo seu índice, e dar append para uma lista
     return column_list
 
@@ -153,7 +152,7 @@ plt.ylabel('Quantidade')
 plt.xlabel('Gênero')
 plt.xticks(y_pos, types)
 plt.title('Quantidade por Gênero')
-#plt.show(block=True)
+plt.show(block=True)
 
 input("Aperte Enter para continuar...")
 # TAREFA 7
@@ -179,7 +178,7 @@ plt.ylabel('Quantidade')
 plt.xlabel('Tipo de Usuários')
 plt.xticks(y_pos, types)
 plt.title('Quantidade por Tipo de Usuários')
-#plt.show(block=True)
+plt.show(block=True)
 
 input("Aperte Enter para continuar...")
 
@@ -228,10 +227,7 @@ def obter_mediana(lista):
     nova_lista = []
     mediana = 0
 
-    for item in lista:
-        nova_lista.append(float(item))
-
-    nova_lista = sorted(nova_lista)
+    nova_lista = sorted([float(item) for item in lista])
 
     if qtd_lista % 2 == 0:
         mediana = nova_lista[(qtd_trip-1) / 2]
@@ -240,20 +236,16 @@ def obter_mediana(lista):
         mediana = (nova_lista[m-1] + nova_lista[m]) / 2
     return mediana
 
-def obter_minimo(lista, max = 0):
-    if max == 0:
-        max = obter_maximo(lista)
-
-    min = max
+def obter_minimo(lista):
+    min = float(lista[0])
 
     for item in lista:
-        valor = float(item)
-        if valor < min:
-            min = valor
+        if float(item) < min:
+            min = float(item)
     return min
 
 max_trip = obter_maximo(trip_duration_list)
-min_trip = obter_minimo(trip_duration_list, max_trip)
+min_trip = obter_minimo(trip_duration_list)
 mean_trip = obter_media(trip_duration_list)
 median_trip = obter_mediana(trip_duration_list)
 
@@ -301,25 +293,29 @@ input("Aperte Enter para continuar...")
 # para que nós possamos usar essa função com outra categoria de dados.
 print("Você vai encarar o desafio? (yes ou no)")
 answer = "yes"
-
+"""
+Função de exemplo com anotações.
+Argumentos:
+    column_list: coluna do arquivo.
+Retorna:
+    Duas listas contendo os tipos encontrados na coluna e os counts
+"""
 def count_items(column_list):
     item_types = []
     count_items = []
 
     item_types = set(column_list)
     aux = {}
-
+    # popula o dicionario com zero
     for item in item_types:
         aux[item] = 0
-
+    # intera os valores da colula e incrementa o contador conforme indice do dicionario
     for item in column_list:
-        if item in aux:
             aux[item] += 1
 
-    for item in aux.values():
-        count_items.append(item)
-    return item_types, count_items
+    count_items = [valor for valor in aux.values()]
 
+    return item_types, count_items
 
 if answer == "yes":
     # ------------ NÃO MUDE NENHUM CÓDIGO AQUI ------------

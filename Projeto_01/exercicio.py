@@ -18,40 +18,21 @@ def count_none(data_list, coluna):
 
 def column_to_list(data, index):
     column_list = []
-    for amostra in data:
-        column_list.append(amostra[index])
+    column_list = [amostra[index] for amostra in data]
     # Dica: Você pode usar um for para iterar sobre as amostras, pegar a feature pelo seu índice, e dar append para uma lista
     return column_list
 
-answer = "yes"
+column_list = column_to_list(data_list, -2)
+item_types = []
+count_items = []
 
-start_stations = set(column_to_list(data_list, 3))
+item_types = set(column_list)
+aux = {}
+# popula o dicionario com zero
+for item in item_types:
+    aux[item] = 0
+# intera os valores da colula e incrementa o contador conforme indice do dicionario
+for item in column_list:
+        aux[item] += 1
 
-def count_items(column_list):
-    item_types = []
-    count_items = []
-
-    item_types = set(column_list)
-    aux = {}
-
-    for item in item_types:
-        aux[item] = 0
-
-    for item in column_list:
-        if item in aux:
-            aux[item] += 1
-
-    for item in aux.values():
-        count_items.append(item)
-
-    return item_types, count_items
-
-if answer == "yes":
-    # ------------ NÃO MUDE NENHUM CÓDIGO AQUI ------------
-    column_list = column_to_list(data_list, -2)
-    types, counts = count_items(column_list)
-
-    print("Tipos:", len(types), "Counts:", sum(counts))
-    assert len(types) == 3, "TAREFA 12: Há 3 tipos de gênero!"
-    assert sum(counts) == 1551505, "TAREFA 12: Resultado de retorno incorreto!"
-    # -----------------------------------------------------
+print(aux)
