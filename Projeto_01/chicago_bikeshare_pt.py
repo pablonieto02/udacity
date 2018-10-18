@@ -48,7 +48,10 @@ print("\nTAREFA 2: Imprimindo o gênero das primeiras 20 amostras")
 genero = ''
 for i, amostra in enumerate(data_list):
     if i <= 19:
-        print(amostra[-2])
+        if amostra[-2].strip() != '' :
+            print(amostra[-2])
+        else:
+            print('Não declarado')
     else:
         break
 
@@ -59,6 +62,14 @@ input("Aperte Enter para continuar...")
 # TAREFA 3
 # TODO: Crie uma função para adicionar as colunas(features) de uma lista em outra lista, na mesma ordem
 def column_to_list(data, index):
+    """
+        Função responsável por transformar os registro de uma coluna em uma lista.
+        Argumentos:
+        param1: data: data list original
+        param2: index: idice da coluna a ser trabalhada
+        Retorna:
+        Uma lista com os valores da coluna informada.
+    """
     column_list = []
     column_list = [amostra[index] for amostra in data]
     # Dica: Você pode usar um for para iterar sobre as amostras, pegar a feature pelo seu índice, e dar append para uma lista
@@ -101,6 +112,13 @@ input("Aperte Enter para continuar...")
 # TODO: Crie uma função para contar os gêneros. Retorne uma lista.
 # Isso deveria retornar uma lista com [count_male, count_female] (exemplo: [10, 15] significa 10 Masculinos, 15 Femininos)
 def count_gender(data_list):
+    """
+        Função responsável contar os genêros da listas de dados
+        Argumentos:
+        param1: data_list: data list original
+        Retorna:
+        Uma lista com os totais por gênero declarado no formato [count_male, count_female]
+    """
     male = 0
     female = 0
     for genero in column_to_list(data_list, -2):
@@ -125,6 +143,13 @@ input("Aperte Enter para continuar...")
 # TODO: Crie uma função que pegue o gênero mais popular, e retorne este gênero como uma string.
 # Esperamos ver "Male", "Female", ou "Equal" como resposta.
 def most_popular_gender(data_list):
+    """
+        Função responsável por selecionar o gênero mais popular
+        Argumentos:
+        param1: data_list: data list original
+        Retorna:
+        Uma string com o gênero mais popular
+    """
     count_generos = count_gender(data_list)
 
     if count_generos[0] > count_generos[1]:
@@ -159,19 +184,33 @@ input("Aperte Enter para continuar...")
 # TODO: Crie um gráfico similar para user_types. Tenha certeza que a legenda está correta.
 print("\nTAREFA 7: Verifique o gráfico!")
 
-def count_user_type(data_list):
-    customer = 0
-    subscriber = 0
-    for user_type in column_to_list(data_list, -3):
-        if user_type == 'Customer':
-            customer += 1
-        elif user_type == 'Subscriber':
-            subscriber += 1
-    return [customer, subscriber]
+# Obeservação: este metodo é a resposta da tarefa 12. Coloquei aqui para aproveitamento de código.
+def count_items(column_list):
+    """
+        Função responsável contar tipos de informações presente da lista.
+        Argumentos:
+        param1: column_list: lista de dados a serem contados
+        Retorna:
+        Retorna duas listas item_types contendo os tipos (strings) encontradas na
+        lista e item_types com as contagens na ordem respectiva.
+    """
+    item_types = []
+    count_items = []
 
-user_type = column_to_list(data_list, -3)
-types = ["Customer", "Subscriber"]
-quantity = count_user_type(data_list)
+    item_types = set(column_list)
+    aux = {}
+    # popula o dicionario com zero
+    for item in item_types:
+        aux[item] = 0
+    # intera os valores da colula e incrementa o contador conforme indice do dicionario
+    for item in column_list:
+            aux[item] += 1
+
+    count_items = [valor for valor in aux.values()]
+
+    return item_types, count_items
+
+types, quantity = count_items(column_to_list(data_list, -3))
 y_pos = list(range(len(types)))
 plt.bar(y_pos, quantity)
 plt.ylabel('Quantidade')
@@ -183,6 +222,14 @@ plt.show(block=True)
 input("Aperte Enter para continuar...")
 
 def count_none(data_list, coluna):
+    """
+        Função responsável contar as strings vázias de alguma coluna do data list original
+        Argumentos:
+        param1: data_list: lista de dados original
+        param2: coluna: indice da coluna da listas de dados original
+        Retorna:
+        Retorna um int contendo a quantidade de valores nulos ou string vazia encontrados na coluna
+    """
     countnone = 0
     for valor in column_to_list(data_list, coluna):
         if valor is None or valor.strip() == '' :
@@ -209,6 +256,13 @@ input("Aperte Enter para continuar...")
 trip_duration_list = column_to_list(data_list, 2)
 
 def obter_maximo(lista):
+    """
+        Função responsável obter maior número de uma lista contendo valores númericos
+        Argumentos:
+        param1: lista: lista de dados
+        Retorna:
+        Retorna um int com o maior número encontrado
+    """
     max = 0
     for item in lista:
         valor = float(item)
@@ -217,12 +271,26 @@ def obter_maximo(lista):
     return max
 
 def obter_media(lista):
+    """
+        Função responsável obter a média de uma lista contendo valores númericos
+        Argumentos:
+        param1: lista: lista de dados
+        Retorna:
+        Retorna um int a média
+    """
     soma = 0
     for item in lista:
         soma += float(item)
     return float(round(soma / len(lista)))
 
 def obter_mediana(lista):
+    """
+        Função responsável obter a mediana de uma lista contendo valores númericos
+        Argumentos:
+        param1: lista: lista de dados
+        Retorna:
+        Retorna um int a mediana
+    """
     qtd_lista = len(lista)
     nova_lista = []
     mediana = 0
@@ -237,6 +305,13 @@ def obter_mediana(lista):
     return mediana
 
 def obter_minimo(lista):
+    """
+        Função responsável obter o menor número de uma lista contendo valores númericos
+        Argumentos:
+        param1: lista: lista de dados
+        Retorna:
+        Retorna um int com o maior número encontrado
+    """
     min = float(lista[0])
 
     for item in lista:
@@ -293,29 +368,6 @@ input("Aperte Enter para continuar...")
 # para que nós possamos usar essa função com outra categoria de dados.
 print("Você vai encarar o desafio? (yes ou no)")
 answer = "yes"
-"""
-Função de exemplo com anotações.
-Argumentos:
-    column_list: coluna do arquivo.
-Retorna:
-    Duas listas contendo os tipos encontrados na coluna e os counts
-"""
-def count_items(column_list):
-    item_types = []
-    count_items = []
-
-    item_types = set(column_list)
-    aux = {}
-    # popula o dicionario com zero
-    for item in item_types:
-        aux[item] = 0
-    # intera os valores da colula e incrementa o contador conforme indice do dicionario
-    for item in column_list:
-            aux[item] += 1
-
-    count_items = [valor for valor in aux.values()]
-
-    return item_types, count_items
 
 if answer == "yes":
     # ------------ NÃO MUDE NENHUM CÓDIGO AQUI ------------
