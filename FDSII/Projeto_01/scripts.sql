@@ -44,3 +44,17 @@ INNER JOIN Artist a ON a.Artistid = alb.Artistid
 WHERE g.GenreId = 1
 GROUP BY a.Artistid, a.Name
 ORDER BY Songs DESC
+
+/*
+Pergunta 3
+Primeiro, descubra qual artista ganhou mais de acordo com InvoiceLines (linhas de faturamento).
+Agora encontre qual cliente gastou mais com o artista que você encontrou acima.
+*/
+SELECT a.Artistid, a.Name, SUM(il.unitPrice) Valor_Total
+FROM Track t
+INNER JOIN Genre g ON g.GenreId = t.Genreid
+INNER JOIN Album alb ON alb.Albumid = t.Albumid
+INNER JOIN Artist a ON a.Artistid = alb.Artistid
+INNER JOIN InvoiceLine il ON il.Trackid = t.Trackid
+GROUP BY a.Artistid, a.Name
+ORDER BY il.unitPrice DESC
