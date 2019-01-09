@@ -71,3 +71,29 @@ INNER JOIN Customer c ON c.Customerid = i.Customerid
 WHERE a.Artistid = 90
 GROUP BY c.Customerid
 ORDER BY AmountSpent DESC
+
+/*
+SQL (Avançado) Pergunta 1
+Queremos descobrir o gênero musical mais popular em cada país. Determinamos o gênero mais popular como o gênero com o maior número de
+compras. Escreva uma consulta que retorna cada país juntamente a seu gênero mais vendido. Para países onde o número máximo de compras é
+compartilhado retorne todos os gêneros.
+*/
+SELECT Purchases, Country, name, genreid FROM (
+	SELECT COUNT(il.invoicelineid) Purchases, i.BillingCountry Country, g.name, g.genreid, max_purchases
+	FROM Invoice i
+	INNER JOIN InvoiceLine il ON il.Invoiceid = i.Invoiceid
+	INNER JOIN Track t ON t.Trackid = il.Trackid
+	INNER JOIN Genre g ON g.GenreId = t.GenreId
+	LEFT JOIN (	SELECT MAX(count) max_purchases, BillingCountry FROM (
+							SELECT COUNT(sub_il.invoicelineid) count, sub_i.BillingCountry, sub_g.genreid
+							FROM Invoice sub_i
+							INNER JOIN InvoiceLine sub_il ON sub_il.Invoiceid = sub_i.Invoiceid
+							INNER JOIN Track sub_t ON sub_t.Trackid = sub_il.Trackid
+							INNER JOIN Genre sub_g ON sub_g.GenreId = sub_t.GenreId
+							GROUP BY sub_i.BillingCountry, sub_g.genreid
+						)
+						GROUP BY BillingCountry
+					) sub_max ON sub_max.BillingCountry = i.BillingCountry
+	GROUP BY i.BillingCountry, g.name, g.genreid
+)
+WHERE max_purchases = purchases
