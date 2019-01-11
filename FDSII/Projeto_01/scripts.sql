@@ -84,16 +84,56 @@ SELECT Purchases, Country, name, genreid FROM (
 	INNER JOIN InvoiceLine il ON il.Invoiceid = i.Invoiceid
 	INNER JOIN Track t ON t.Trackid = il.Trackid
 	INNER JOIN Genre g ON g.GenreId = t.GenreId
-	LEFT JOIN (	SELECT MAX(count) max_purchases, BillingCountry FROM (
-			SELECT COUNT(sub_il.invoicelineid) count, sub_i.BillingCountry, sub_g.genreid
-			FROM Invoice sub_i
-			INNER JOIN InvoiceLine sub_il ON sub_il.Invoiceid = sub_i.Invoiceid
-			INNER JOIN Track sub_t ON sub_t.Trackid = sub_il.Trackid
-			INNER JOIN Genre sub_g ON sub_g.GenreId = sub_t.GenreId
-			GROUP BY sub_i.BillingCountry, sub_g.genreid
-		)
-		GROUP BY BillingCountry
-	) sub_max ON sub_max.BillingCountry = i.BillingCountry
+	INNER JOIN (	SELECT MAX(count) max_purchases, BillingCountry FROM (
+						SELECT COUNT(sub_il.invoicelineid) count, sub_i.BillingCountry, sub_g.genreid
+						FROM Invoice sub_i
+						INNER JOIN InvoiceLine sub_il ON sub_il.Invoiceid = sub_i.Invoiceid
+						INNER JOIN Track sub_t ON sub_t.Trackid = sub_il.Trackid
+						INNER JOIN Genre sub_g ON sub_g.GenreId = sub_t.GenreId
+						GROUP BY sub_i.BillingCountry, sub_g.genreid
+					)
+					GROUP BY BillingCountry
+				) sub_max ON sub_max.BillingCountry = i.BillingCountry
 	GROUP BY i.BillingCountry, g.name, g.genreid
 )
 WHERE max_purchases = purchases
+
+/*
+Pergunta 2
+Retorne todos os nomes de músicas que possuem um comprimento de canção maior que o comprimento médio de canção. Embora você possa 
+fazer isso com duas consultas. Imagine que você queira que sua consulta atualize com base em onde os dados são colocados no banco de dados.
+Portanto, você não quer fazer um hard code da média na sua consulta. Você só precisa da tabela Track (música) para completar essa consulta. 
+Retorne o Name (nome) e os Milliseconds (milissegundos) para cada música. Ordene pelo comprimento da canção com as músicas mais longas
+sendo listadas primeiro.
+*/
+SELECT t.Name, t.Milliseconds
+FROM Track t
+WHERE t.Milliseconds > (SELECT AVG(sub.Milliseconds) FROM Track sub)
+ORDER BY t.Milliseconds DESC
+
+/*
+Pergunta 3
+Escreva uma consulta que determina qual cliente gastou mais em músicas por país. Escreva uma consulta que retorna o país junto ao principal
+cliente e quanto ele gastou. Para países que compartilham a quantia total gasta, forneça todos os clientes que gastaram essa quantia.
+
+Você só precisará usar as tabelas Customer (cliente) e Invoice (fatura).
+
+Verifique sua solução embora existam apenas 24 países, a consulta deve retornar 25 linhas. As últimas 11 linhas são mostradas na imagem
+ abaixo. Observe que o Reino Unido tem 2 clientes que compartilham o máximo.
+*/
+SELECT BillingCountry, sum_total, FirstName, LastName, Customerid FROM (
+	SELECT i.BillingCountry, c.FirstName, c.LastName,c.Customerid, b.max_total, SUM(i.Total) sum_total
+	FROM Invoice i
+	INNER JOIN Customer c ON c.customerid = i.customerid
+	INNER JOIN (	SELECT sub.BillingCountry, MAX(sub.Total) max_total FROM (
+							SELECT si.BillingCountry, sc.Customerid, SUM(si.Total) total
+							FROM Invoice si
+							INNER JOIN Customer sc ON sc.customerid = si.customerid
+							GROUP BY si.BillingCountry, sc.Customerid
+								) sub
+						GROUP BY BillingCountry
+					) b ON b.BillingCountry = i.BillingCountry
+	GROUP BY i.BillingCountry, c.FirstName, c.LastName,c.Customerid, b.max_total
+)
+WHERE sum_total = max_total
+ORDER BY BillingCountry
