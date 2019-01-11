@@ -1,3 +1,4 @@
+-- Conjunto de Perguntas 1
 -- Pergunta 1: Quais países possuem mais faturas?
 SELECT BillingCountry, COUNT(invoiceid) AS Invoices
 FROM Invoice
