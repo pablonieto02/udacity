@@ -58,7 +58,7 @@ INNER JOIN Album alb ON alb.Albumid = t.Albumid
 INNER JOIN Artist a ON a.Artistid = alb.Artistid
 INNER JOIN InvoiceLine il ON il.Trackid = t.Trackid
 GROUP BY a.Artistid, a.Name
-ORDER BY il.unitPrice DESC
+ORDER BY 3 DESC
 
 -- Agora encontre qual cliente gastou mais com o artista que você encontrou acima.
 SELECT a.Name, SUM(il.unitPrice *  il.Quantity) AmountSpent, c.Customerid, c.FirstName, c.LastName
@@ -69,7 +69,19 @@ INNER JOIN Artist a ON a.Artistid = alb.Artistid
 INNER JOIN InvoiceLine il ON il.Trackid = t.Trackid
 INNER JOIN Invoice i ON i.Invoiceid = il.Invoiceid
 INNER JOIN Customer c ON c.Customerid = i.Customerid
-WHERE a.Artistid = 90
+WHERE a.Artistid = (
+					SELECT Artistid FROM (
+						SELECT a.Artistid, a.Name, SUM(il.unitPrice) Valor_Total
+						FROM Track t
+						INNER JOIN Genre g ON g.GenreId = t.Genreid
+						INNER JOIN Album alb ON alb.Albumid = t.Albumid
+						INNER JOIN Artist a ON a.Artistid = alb.Artistid
+						INNER JOIN InvoiceLine il ON il.Trackid = t.Trackid
+						GROUP BY a.Artistid, a.Name
+						ORDER BY 3 DESC
+					)
+					LIMIT 1
+)
 GROUP BY c.Customerid
 ORDER BY AmountSpent DESC
 
