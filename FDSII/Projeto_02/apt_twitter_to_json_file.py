@@ -4,10 +4,6 @@ import pandas as pd
 import json
 import time
 
-#retweet_count
-#favorite_count
-#retweeted
-
 df = pd.read_csv('twitter-archive-enhanced.csv', sep = ',', encoding='utf-8')
 
 with open('keys_tweet.json') as json_file:  
@@ -20,30 +16,32 @@ with open('keys_tweet.json') as json_file:
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_secret)
 api = tweepy.API(auth)
-'''
-# guarda o id dos tweets já salvos numa lista
-with open('tweet_json.json') as json_file:
-    arquivo = json.load(json_file)
-    for row in arquivo['tweet']:
-        list_tweets_id.append(row['id'])
-'''
+
 data = {}
 data['tweet'] = []
 list_tweets_id = []
 
-limit = 1
+def get_status_tweet(id):
+    while True:
+        try:
+            tweet = api.get_status(id)
+            break
+        except tweepy.RateLimitError as tweep_error:
+            print(str(id) + ' - Erro:' + str(tweep_error))
+            print('Aguardando 1 minuto.')
+            time.sleep(60)
+            continue
+        except tweepy.TweepError as tweep_error:
+            print(str(id) + ' - Erro:' + str(tweep_error))
+            return -1
+    return tweet
+
 for i, row in df.iterrows():
-
-    if i >= 200:
-        break
-    '''
-    if int(row['tweet_id']) in list_tweets_id:
-        print(str(row['tweet_id']) + ' - tweet já salvo no arquivo.')
-    else:  '''  
-    tweet = api.get_status(row['tweet_id'])
-    data['tweet'].append(tweet._json)
-    list_tweets_id.append(int(tweet._json['id']))
-    print(str(tweet._json['id']) + ' - adicionado' + str(i))
-
-with open('tweet_json.json', 'w') as outfile:
+    tweet = get_status_tweet(row['tweet_id'])
+    if tweet != -1:
+        data['tweet'].append(tweet._json)
+        list_tweets_id.append(int(tweet._json['id']))
+        print(str(i) + ' - ' + str(tweet._json['id']) + ' - ok')    
+            
+with open('tweet_json.txt', 'w') as outfile:
     json.dump(data, outfile, sort_keys=True, indent=4)

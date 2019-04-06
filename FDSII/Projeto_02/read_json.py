@@ -1,6 +1,6 @@
 import json
 
-with open('keys_tweet.json') as json_file:  
+with open('tweet_json.json') as json_file:  
     data = json.load(json_file)
-    print(data['keys_tweet'][0]['consumer_key'])
-        
+    for row in data['tweet']:
+        print(row['id'])
