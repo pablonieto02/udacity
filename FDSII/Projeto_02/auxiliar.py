@@ -13,3 +13,4 @@ for url in df_img_pred['jpg_url']:
     with open(os.path.join(folder_name, url.split('/')[-1]), mode = 'wb') as file:
               file.write(response.content)
 print(os.listdir(folder_name))
+--
